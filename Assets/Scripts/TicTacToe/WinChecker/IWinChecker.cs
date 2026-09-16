@@ -9,5 +9,5 @@ public enum GameOutcome
 
 public interface IWinChecker
 {
-    GameOutcome CheckOutcome(IBoard board, int lastRow, int lastCol);
+    GameOutcome CheckOutcome(IBoardReader board, int lastRow, int lastCol);
 }

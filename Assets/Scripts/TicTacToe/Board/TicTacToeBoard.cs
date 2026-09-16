@@ -15,10 +15,6 @@ public class TicTacToeBoard : IBoard {
         return grid[row, col];
     }
 
-    public int GetColCount() {
-        return grid.GetLength(1);
-    }
-
     public int GetLength(int dimension) {
         return grid.GetLength(dimension);
     }

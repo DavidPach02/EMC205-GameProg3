@@ -1,7 +1,7 @@
 using UnityEngine;
 
 public class Standard3x3WinChecker : IWinChecker {
-    public GameOutcome CheckOutcome(IBoard board, int lastRow, int lastCol) {
+    public GameOutcome CheckOutcome(IBoardReader board, int lastRow, int lastCol) {
         // Check if the move resulted in a WIN
         if (IsWin(board, lastRow, lastCol)) {
             return GameOutcome.Win;
@@ -16,7 +16,7 @@ public class Standard3x3WinChecker : IWinChecker {
         return GameOutcome.InProgress;
     }
 
-    private bool IsWin(IBoard board, int lastRow, int lastCol) {
+    private bool IsWin(IBoardReader board, int lastRow, int lastCol) {
         string symbol = board.GetCell(lastRow, lastCol);
         if (string.IsNullOrEmpty(symbol)) return false;
 
@@ -44,7 +44,7 @@ public class Standard3x3WinChecker : IWinChecker {
         return false;
     }
 
-    private bool IsBoardFull(IBoard board) {
+    private bool IsBoardFull(IBoardReader board) {
         for (int r = 0; r < 3; r++) {
             for (int c = 0; c < 3; c++) {
                 if (board.IsCellEmpty(r, c)) {

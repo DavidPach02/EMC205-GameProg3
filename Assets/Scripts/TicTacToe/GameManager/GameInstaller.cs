@@ -29,6 +29,6 @@ public class GameInstaller : MonoBehaviour
         //IPlayer p3 = new AIPlayer("AI Player 2", "Y");
         //turnManager.QueuePlayer(p3);
 
-        gameManager.Initialize(board, boardPresenter, inputProvider, winChecker, turnManager);
+        gameManager.Initialize(board, boardPresenter, winChecker, turnManager);
     }
 }
