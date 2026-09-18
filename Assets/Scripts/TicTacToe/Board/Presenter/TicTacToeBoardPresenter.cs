@@ -8,9 +8,8 @@ public class TicTacToeBoardPresenter : MonoBehaviour, IBoardPresenter
 
     private Button[,] cellButtons;
 
-    public TicTacToeBoardPresenter Initialize(Button[,] cellButtons) {
+    IBoardPresenter IBoardPresenter.Initialize(Button[,] cellButtons) {
         this.cellButtons = cellButtons;
-
         return this;
     }
 
@@ -18,7 +17,7 @@ public class TicTacToeBoardPresenter : MonoBehaviour, IBoardPresenter
         if (cellButtons == null) return;
 
         foreach (Button button in cellButtons) {
-            button.GetComponentInChildren<Text>().text = "";
+            button.GetComponentInChildren<TextMeshProUGUI>().text = "";
             button.interactable = true;
         }
     }

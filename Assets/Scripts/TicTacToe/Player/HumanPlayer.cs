@@ -21,8 +21,7 @@ public class HumanPlayer : IPlayer
         return symbol;
     }
 
-    public void MakeMove(IBoardReader board, Action<int, int> onMoveSelected)
-    {
+    public void MakeMove(IBoardReader board, Action<int, int> onMoveSelected) {
         Action<int, int> inputHandler = null;
 
         inputHandler = (row, col) => {

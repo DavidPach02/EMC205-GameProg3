@@ -1,60 +1,89 @@
 using UnityEngine;
+using UnityEngine.UI;
+using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    IBoard board;
-    IBoardPresenter boardPresenter;
-    ITurnManager turnManager;
-    IWinChecker winChecker;
+    private static GameManager instance;
+    public static GameManager Instance {
+        get;
+        private set;
+    }
 
-    bool isGameOver;
+    private BoardView boardView;
+    private IBoardPresenter boardPresenter;
+    private IRestartScreenView restartScreenView;
+    private IInputProvider inputProvider;
+    private Queue<IPlayer> playerQueue;
+    private MatchController activeMatch;
 
-    public GameManager Initialize(IBoard board, IBoardPresenter boardPresenter, IWinChecker winChecker, ITurnManager turnManager)
+    private void Awake() {
+        if (Instance != null && Instance != this) {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this as GameManager;
+        DontDestroyOnLoad(gameObject);
+    }
+
+    public void InitializeSession(
+        BoardView boardView, 
+        IBoardPresenter boardPresenter, 
+        IInputProvider inputProvider, 
+        Queue<IPlayer> playerQueue, 
+        IRestartScreenView restartScreenView) 
     {
-        this.board = board;
+        this.boardView = boardView;
         this.boardPresenter = boardPresenter;
-        this.winChecker = winChecker;
-        this.turnManager = turnManager;
+        this.inputProvider = inputProvider;
+        this.playerQueue = playerQueue;
+        this.restartScreenView = restartScreenView;
 
-        //this.inputProvider.OnCellSelected += HandleCellSelected;
-
-        turnManager.AdvanceTurn();
-        //UpdateTurnUI();
-        StartTurn();
-
-        return this;
+        StartNewMatch();
     }
 
-    private void StartTurn() {
-        IPlayer activePlayer = turnManager.GetCurrentPlayer();
-        boardPresenter.SetStatusText($"{activePlayer.GetPlayerName()}'s Turn ({activePlayer.GetSymbol()})");
+    public void StartNewMatch() {
+        // Hide restart screen
+        restartScreenView?.Hide();
 
-        // Human waits for input and AI immediately picks a slot
-        activePlayer.MakeMove(board, ExecuteMove);
+        // Create models
+        IBoard board = new TicTacToeBoard();
+        IWinChecker winChecker = new Standard3x3WinChecker();
+        ITurnManager turnManager = new StandardTurnManager();
+        turnManager.SetPlayerQueue(playerQueue);
+
+        // Rebuild or reset UI Board
+        Button[,] spawnedButtons = boardView.BuildBoard(
+            board.GetLength(0),
+            board.GetLength(1),
+            inputProvider.HandleCellClicked
+        );
+
+        if (boardPresenter != null) {
+            boardPresenter.Initialize(spawnedButtons);
+            boardPresenter.ClearBoard();
+        }
+
+        // Instantiate and run clean match
+        activeMatch = new MatchController();
+        activeMatch.Initialize(board, boardPresenter, winChecker, turnManager);
+        // Subscribe to event
+        activeMatch.OnMatchEnded += ActiveMatch_OnMatchEnded;
+
+        activeMatch.StartMatch();
     }
 
-    private void ExecuteMove(int row, int col)
-    {
-        IPlayer activePlayer = turnManager.GetCurrentPlayer();
-
-        board.SetCell(row, col, activePlayer.GetSymbol());
-        boardPresenter.SetCellSymbol(row, col, activePlayer.GetSymbol());
-        //audioService.PlayMoveSound();
-
-        GameOutcome outcome = winChecker.CheckOutcome(board, row, col);
-
-        if (outcome == GameOutcome.Win)
-        {
-            boardPresenter.SetStatusText($"{activePlayer.GetPlayerName()} Wins!");
+    private void ActiveMatch_OnMatchEnded(GameOutcome outcome, IPlayer activePlayer) {
+        if (activeMatch != null) {
+            activeMatch.OnMatchEnded -= ActiveMatch_OnMatchEnded;
         }
-        else if (outcome == GameOutcome.Draw)
-        {
-            boardPresenter.SetStatusText("Game Ended in a Draw!");
-        }
-        else
-        {
-            turnManager.AdvanceTurn();
-            StartTurn(); // Trigger next turn execution
-        }
+
+        restartScreenView?.Show();
+    }
+
+    public void RestartGame() {
+        SceneManager.LoadScene("SampleScene");
     }
 }

@@ -32,4 +32,8 @@ public class StandardTurnManager : ITurnManager
     public void QueuePlayer(IPlayer player) {
         playerQueue.Enqueue(player);
     }
+
+    public void SetPlayerQueue(Queue<IPlayer> playerQueue) {
+        this.playerQueue = new Queue<IPlayer>(playerQueue);
+    }
 }

@@ -1,6 +1,9 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public interface IBoardPresenter {
+    IBoardPresenter Initialize(Button[,] cellButtons);
+
     // Cell Rendering
     void SetCellSymbol(int row, int col, string symbol);
     void SetCellInteractable(int row, int col, bool interactable);
