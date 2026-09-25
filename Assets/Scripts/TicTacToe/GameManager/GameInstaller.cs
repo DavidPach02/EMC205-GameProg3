@@ -13,14 +13,18 @@ public class GameInstaller : MonoBehaviour
     void Start() {
         IInputProvider inputProvider = new DynamicInputProvider();
 
-        Queue<IPlayer> playerQueue = new Queue<IPlayer>();
-        IPlayer p1 = new HumanPlayer("Human Player", "X", inputProvider);
-        playerQueue.Enqueue(p1);
-        IPlayer p2 = new RandomAIPlayer("AI Player 1", "O", 1000);
-        playerQueue.Enqueue(p2);
-        //IPlayer p3 = new AIPlayer("AI Player 2", "Y");
-        //turnManager.QueuePlayer(p3);
+        //Queue<IPlayer> playerQueue = new Queue<IPlayer>();
+        //IPlayer p1 = new HumanPlayer("Human Player", "X", inputProvider);
+        //playerQueue.Enqueue(p1);
+        //IPlayer p2 = new RandomAIPlayer("AI Player 1", "O", 1000);
+        //playerQueue.Enqueue(p2);
 
-        GameManager.Instance.InitializeSession(boardView, boardPresenter, inputProvider, playerQueue, restartScreenView);
+        //IPlayer p3 = new StupidAIPlayer("Stupid Player", "Y", 2000);
+        //playerQueue.Enqueue(p3);
+
+        IMatchMaker aiMatchMaker = new AIVsAIMatchMaker(1000);
+        IMatchMaker pvpMatchMaker = new LocalPVPMatchMaker(inputProvider);
+
+        GameManager.Instance.InitializeSession(boardView, boardPresenter, inputProvider, pvpMatchMaker, restartScreenView);
     }
 }
