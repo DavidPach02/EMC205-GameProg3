@@ -14,10 +14,10 @@ public class GameManager : MonoBehaviour
     }
 
     private BoardView boardView;
-    private IBoardPresenter boardPresenter;
+    //private IBoardPresenter boardPresenter;
     private IRestartScreenView restartScreenView;
     private IInputProvider inputProvider;
-    private IMatchMaker matchMaker;
+    //private IMatchMaker matchMaker;
 
     private MatchController activeMatch;
 

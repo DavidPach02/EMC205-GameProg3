@@ -25,12 +25,13 @@ public class GameInstaller : MonoBehaviour
         // Create the match
         MatchFactory matchFactory = new MatchFactory();
         IMatchMaker aiMatchMaker = new AIVsAIMatchMaker(1000);
+        IMatchMaker pvpMatchMaker = new LocalPVPMatchMaker(inputProvider);
+        IMatchMaker blitzMatchMaker = new AIBlitzMatchMaker(10);
 
         // Create match settings
-        MatchSettings matchSettings = MatchPreset.CreateClassic1v1();
-        //IMatchMaker pvpMatchMaker = new LocalPVPMatchMaker(inputProvider);
+        MatchSettings matchSettings = MatchPreset.CreateBattleRoyaleBlitz();
 
-        MatchController controller = matchFactory.CreateMatchInstance(matchSettings, boardPresenter, aiMatchMaker.CreateMatchup());
+        MatchController controller = matchFactory.CreateMatchInstance(matchSettings, boardPresenter, blitzMatchMaker.CreateMatchup());
 
         GameManager.Instance.InitializeSession(controller, boardView, inputProvider, restartScreenView);
     }
