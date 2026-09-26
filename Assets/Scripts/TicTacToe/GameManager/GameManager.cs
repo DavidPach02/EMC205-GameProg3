@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour
     private IRestartScreenView restartScreenView;
     private IInputProvider inputProvider;
     private IMatchMaker matchMaker;
+
     private MatchController activeMatch;
 
     // PART 3: Keeping it alive on awake
@@ -36,16 +37,16 @@ public class GameManager : MonoBehaviour
     }
 
     public void InitializeSession(
-        BoardView boardView, 
-        IBoardPresenter boardPresenter, 
-        IInputProvider inputProvider, 
-        IMatchMaker matchMaker, 
+        MatchController match,
+        BoardView boardView,
+        IInputProvider inputProvider,
         IRestartScreenView restartScreenView) 
     {
         this.boardView = boardView;
-        this.boardPresenter = boardPresenter;
+        //this.boardPresenter = boardPresenter;
         this.inputProvider = inputProvider;
-        this.matchMaker = matchMaker;
+        //this.matchMaker = matchMaker;
+        this.activeMatch = match;
         this.restartScreenView = restartScreenView;
 
         StartNewMatch();
@@ -55,31 +56,30 @@ public class GameManager : MonoBehaviour
         // Hide restart screen
         restartScreenView?.Hide();
 
-        // Create models
-        IBoard board = new TicTacToeBoard();
-        IWinChecker winChecker = new Standard3x3WinChecker();
-        ITurnManager turnManager = new StandardTurnManager();
-
-        turnManager.SetPlayerQueue(new Queue<IPlayer>(matchMaker.CreateMatchup()));
-
-        // Rebuild or reset UI Board
+        // Tie in button UI with the match
         Button[,] spawnedButtons = boardView.BuildBoard(
-            board.GetLength(0),
-            board.GetLength(1),
+            activeMatch.board.GetLength(0),
+            activeMatch.board.GetLength(1),
             inputProvider.HandleCellClicked
         );
 
-        if (boardPresenter != null) {
-            boardPresenter.Initialize(spawnedButtons);
-            boardPresenter.ClearBoard();
+        // Create models - handled by MatchFactory now
+        //IBoard board = new TicTacToeBoard();
+        //IWinChecker winChecker = new Standard3x3WinChecker();
+        //ITurnManager turnManager = new StandardTurnManager();
+        //turnManager.SetPlayerQueue(new Queue<IPlayer>(matchMaker.CreateMatchup()));
+
+        if (activeMatch.boardPresenter != null) {
+            activeMatch.boardPresenter.Initialize(spawnedButtons);
+            activeMatch.boardPresenter.ClearBoard();
         }
 
         // Instantiate and run clean match
-        activeMatch = new MatchController();
-        activeMatch.Initialize(board, boardPresenter, winChecker, turnManager);
+        //activeMatch = new MatchController();
+        //activeMatch.Initialize(board, boardPresenter, winChecker, turnManager);
+
         // Subscribe to event
         activeMatch.OnMatchEnded += ActiveMatch_OnMatchEnded;
-
         activeMatch.StartMatch();
     }
 
@@ -89,6 +89,11 @@ public class GameManager : MonoBehaviour
         }
 
         restartScreenView?.Show();
+    }
+
+    private void OnDestroy()
+    {
+        
     }
 
     public void RestartGame() {

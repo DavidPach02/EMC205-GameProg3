@@ -9,7 +9,7 @@ public class MatchSettings {
     public bool fillWithBots { get; }
     public string botDifficulty { get; }
 
-    internal MatchSettings(
+    public MatchSettings(
         int boardRows,
         int boardCols,
         int winSequenceLength,

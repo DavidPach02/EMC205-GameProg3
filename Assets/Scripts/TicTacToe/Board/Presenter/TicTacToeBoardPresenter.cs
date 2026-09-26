@@ -2,8 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class TicTacToeBoardPresenter : MonoBehaviour, IBoardPresenter
-{
+public class TicTacToeBoardPresenter : MonoBehaviour, IBoardPresenter {
     [SerializeField] TextMeshProUGUI statusText;
 
     private Button[,] cellButtons;

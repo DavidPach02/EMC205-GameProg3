@@ -8,7 +8,7 @@ public class Standard3x3WinChecker : IWinChecker {
         }
 
         // Check if the board is completely full (DRAW)
-        if (IsBoardFull(board)) {
+        if (board.IsBoardFull()) {
             return GameOutcome.Draw;
         }
 

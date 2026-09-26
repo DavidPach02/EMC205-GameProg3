@@ -28,8 +28,8 @@ public abstract class AIPlayer : IPlayer {
         List<(int row, int col)> emptyCells = new List<(int, int)>();
 
         // Scan board for free slots
-        for (int r = 0; r < 3; r++) {
-            for (int c = 0; c < 3; c++) {
+        for (int r = 0; r < board.GetLength(0); r++) {
+            for (int c = 0; c < board.GetLength(1); c++) {
                 if (board.IsCellEmpty(r, c)) {
                     emptyCells.Add((r, c));
                 }

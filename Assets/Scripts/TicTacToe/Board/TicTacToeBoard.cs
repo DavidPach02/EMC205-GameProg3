@@ -19,6 +19,19 @@ public class TicTacToeBoard : IBoard {
         return grid.GetLength(dimension);
     }
 
+    public bool IsBoardFull() {
+        for (int r = 0; r < 3; r++) {
+            for (int c = 0; c < 3; c++) {
+                if (IsCellEmpty(r, c)) {
+                    // Found an open space
+                    return false;
+                }
+            }
+        }
+        // No empty cells left
+        return true;
+    }
+
     public bool IsCellEmpty(int row, int col) {
         return string.IsNullOrEmpty(GetCell(row, col));
     }

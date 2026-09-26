@@ -3,17 +3,16 @@ using System;
 
 public class MatchController
 {
-    IBoard board;
-    IBoardPresenter boardPresenter;
-    ITurnManager turnManager;
-    IWinChecker winChecker;
+    public IBoard board;
+    public IBoardPresenter boardPresenter;
+    public ITurnManager turnManager;
+    public IWinChecker winChecker;
 
     bool isGameOver;
 
     public event Action<GameOutcome, IPlayer> OnMatchEnded;
 
-    public MatchController Initialize(IBoard board, IBoardPresenter boardPresenter, IWinChecker winChecker, ITurnManager turnManager)
-    {
+    public MatchController Initialize(IBoard board, IBoardPresenter boardPresenter, IWinChecker winChecker, ITurnManager turnManager) {
         this.board = board;
         this.boardPresenter = boardPresenter;
         this.winChecker = winChecker;

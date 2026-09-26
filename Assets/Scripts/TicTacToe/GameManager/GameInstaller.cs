@@ -22,9 +22,16 @@ public class GameInstaller : MonoBehaviour
         //IPlayer p3 = new StupidAIPlayer("Stupid Player", "Y", 2000);
         //playerQueue.Enqueue(p3);
 
+        // Create the match
+        MatchFactory matchFactory = new MatchFactory();
         IMatchMaker aiMatchMaker = new AIVsAIMatchMaker(1000);
-        IMatchMaker pvpMatchMaker = new LocalPVPMatchMaker(inputProvider);
 
-        GameManager.Instance.InitializeSession(boardView, boardPresenter, inputProvider, pvpMatchMaker, restartScreenView);
+        // Create match settings
+        MatchSettings matchSettings = MatchPreset.CreateClassic1v1();
+        //IMatchMaker pvpMatchMaker = new LocalPVPMatchMaker(inputProvider);
+
+        MatchController controller = matchFactory.CreateMatchInstance(matchSettings, boardPresenter, aiMatchMaker.CreateMatchup());
+
+        GameManager.Instance.InitializeSession(controller, boardView, inputProvider, restartScreenView);
     }
 }
