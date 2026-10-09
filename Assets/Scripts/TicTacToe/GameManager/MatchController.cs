@@ -51,33 +51,41 @@ public class MatchController
         boardPresenter.SetCellSymbol(row, col, activePlayer.GetSymbol());
         //audioService.PlayMoveSound();
 
+        GameOutcome outcome = winChecker.CheckOutcome(board, row, col);
+
+        if (outcome == GameOutcome.Win) {
+            EndMatch(GameOutcome.Win, activePlayer);
+            return;
+        }
+
         board.AdvanceTileTurn();
-        if (turnCounter % ringLockCounter == 0)
-        {
-            if (board is DynamicBoard dynamicBoard)
-            {
+        if (turnCounter % ringLockCounter == 0) {
+            if (board is DynamicBoard dynamicBoard) {
                 dynamicBoard.LockOuterRing(ringIndex);
                 ringIndex++;
             }
         }
         boardPresenter.SyncBoard(board);
 
-        GameOutcome outcome = winChecker.CheckOutcome(board, row, col);
-
-        if (outcome == GameOutcome.Win || outcome == GameOutcome.Draw) {
-            isGameOver = true;
-            if (outcome == GameOutcome.Win) {
-                boardPresenter.SetStatusText($"{activePlayer.GetPlayerName()} Wins!");
-            }
-            else {
-                boardPresenter.SetStatusText("Game Ended in a Draw!");
-            }
-
-            OnMatchEnded?.Invoke(outcome, activePlayer);
+        if (board.IsBoardFull()) {
+            EndMatch(GameOutcome.Draw, activePlayer);
+            return;
         }
-        else {
-            turnManager.AdvanceTurn();
-            StartTurn(); // Trigger next turn execution
+
+        turnManager.AdvanceTurn();
+        StartTurn(); // Trigger next turn execution
+    }
+
+    private void EndMatch(GameOutcome outcome, IPlayer activePlayer) {
+        isGameOver = true;
+    
+        if (outcome == GameOutcome.Win) {
+            boardPresenter.SetStatusText($"{activePlayer.GetPlayerName()} Wins!");
         }
+        else{
+            boardPresenter.SetStatusText("Game Ended in a Draw!");
+        }
+
+        OnMatchEnded?.Invoke(outcome, activePlayer);
     }
 }
