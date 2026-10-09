@@ -31,7 +31,7 @@ public class GameInstaller : MonoBehaviour
         // Create match settings
         MatchSettings matchSettings = MatchPreset.CreateBattleRoyaleBlitz();
 
-        MatchController controller = matchFactory.CreateMatchInstance(matchSettings, boardPresenter, blitzMatchMaker.CreateMatchup());
+        MatchController controller = matchFactory.CreateMatchInstance(matchSettings, boardPresenter, pvpMatchMaker.CreateMatchup());
 
         GameManager.Instance.InitializeSession(controller, boardView, inputProvider, restartScreenView);
     }

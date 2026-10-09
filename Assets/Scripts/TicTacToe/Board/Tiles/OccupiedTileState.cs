@@ -9,6 +9,8 @@ public class OccupiedTileState : ITileState {
     private int maxTurnsOccupied = 3;
     private float randomEjectChance = 0.10f;
 
+    public void OnEnterState(TileContext tile) { }
+
     public void OnTurnPassed(TileContext tile) {
         turnsOccupied++;
 

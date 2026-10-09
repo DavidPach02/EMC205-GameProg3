@@ -14,6 +14,7 @@ public class TileContext {
 
     public void TransitionTo(ITileState newState){
         currentState = newState;
+        currentState.OnEnterState(this);
     }
 
     public void PassTurn() {

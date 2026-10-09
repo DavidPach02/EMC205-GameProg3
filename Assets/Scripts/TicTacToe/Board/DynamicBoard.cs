@@ -44,7 +44,7 @@ public class DynamicBoard : IBoard
     public bool IsBoardFull() {
         for (int r = 0; r < GetLength(0); r++) {
             for (int c = 0; c < GetLength(1); c++) {
-                if (IsCellEmpty(r, c)) {
+                if (IsCellEmpty(r, c) && IsCellInteractable(r,c)) {
                     // Found an open space
                     return false;
                 }
@@ -75,5 +75,18 @@ public class DynamicBoard : IBoard
 
         // Safely read state using null-conditional operator
         return tiles[row, col]?.currentState?.canBeClicked ?? false;
+    }
+
+    public void LockOuterRing(int ringIndex) {
+        int rows = GetLength(0);
+        int cols = GetLength(1);
+
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                if (r == ringIndex || r == rows - 1 - ringIndex || c == ringIndex || c == cols - 1 - ringIndex) {
+                    tiles[r, c].TransitionTo(new UnclickableTileState());
+                }
+            }
+        }
     }
 }

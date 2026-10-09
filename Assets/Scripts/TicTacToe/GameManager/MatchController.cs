@@ -10,6 +10,10 @@ public class MatchController
 
     bool isGameOver;
 
+    int turnCounter = 0;
+    int ringLockCounter = 5;
+    int ringIndex = 0;
+
     public event Action<GameOutcome, IPlayer> OnMatchEnded;
 
     public MatchController Initialize(IBoard board, IBoardPresenter boardPresenter, IWinChecker winChecker, ITurnManager turnManager) {
@@ -22,12 +26,15 @@ public class MatchController
     }
 
     public void StartMatch() {
+        turnCounter = 0;
         isGameOver = false;
         turnManager.AdvanceTurn();
         StartTurn();
     }
 
     private void StartTurn() {
+        turnCounter++;
+
         IPlayer activePlayer = turnManager.GetCurrentPlayer();
         boardPresenter.SetStatusText($"{activePlayer.GetPlayerName()}'s Turn ({activePlayer.GetSymbol()})");
 
@@ -44,6 +51,17 @@ public class MatchController
         boardPresenter.SetCellSymbol(row, col, activePlayer.GetSymbol());
         //audioService.PlayMoveSound();
 
+        board.AdvanceTileTurn();
+        if (turnCounter % ringLockCounter == 0)
+        {
+            if (board is DynamicBoard dynamicBoard)
+            {
+                dynamicBoard.LockOuterRing(ringIndex);
+                ringIndex++;
+            }
+        }
+        boardPresenter.SyncBoard(board);
+
         GameOutcome outcome = winChecker.CheckOutcome(board, row, col);
 
         if (outcome == GameOutcome.Win || outcome == GameOutcome.Draw) {
@@ -58,10 +76,6 @@ public class MatchController
             OnMatchEnded?.Invoke(outcome, activePlayer);
         }
         else {
-            board.AdvanceTileTurn();
-
-            boardPresenter.SyncBoard(board);
-
             turnManager.AdvanceTurn();
             StartTurn(); // Trigger next turn execution
         }
