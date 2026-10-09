@@ -2,6 +2,9 @@
 using UnityEngine;
 
 public interface IBoard : IBoardReader {
-    void SetCell(int row, int col, string symbol);
+    bool SetCell(int row, int col, string symbol);
     void ClearBoard();
+    bool IsCellInteractable(int row, int col);
+
+    void AdvanceTileTurn();
 }

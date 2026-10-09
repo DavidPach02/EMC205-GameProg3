@@ -58,6 +58,10 @@ public class MatchController
             OnMatchEnded?.Invoke(outcome, activePlayer);
         }
         else {
+            board.AdvanceTileTurn();
+
+            boardPresenter.SyncBoard(board);
+
             turnManager.AdvanceTurn();
             StartTurn(); // Trigger next turn execution
         }

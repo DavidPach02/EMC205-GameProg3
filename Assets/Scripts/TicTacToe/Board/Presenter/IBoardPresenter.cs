@@ -9,6 +9,10 @@ public interface IBoardPresenter {
     void SetCellInteractable(int row, int col, bool interactable);
     void ClearBoard();
 
+    // Tile Syncing
+    void SyncTileState(int row, int col, string symbol, bool isInteractable);
+    void SyncBoard(IBoard board);
+
     // Game Status Feedback
     void SetStatusText(string message);
 
