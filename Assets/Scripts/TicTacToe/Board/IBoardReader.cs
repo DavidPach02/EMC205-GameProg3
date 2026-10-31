@@ -6,5 +6,7 @@ public interface IBoardReader {
     int GetLength(int dimension);
     bool IsBoardFull();
 
+    bool IsCellInteractable(int row, int col);
+
     bool IsValidCell(int row, int col);
 }

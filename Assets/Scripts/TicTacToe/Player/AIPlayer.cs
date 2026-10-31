@@ -8,6 +8,8 @@ public abstract class AIPlayer : IPlayer {
     protected string symbol;
     protected int delayMs;
 
+    public int powerUpCharges { get; private set; } = 5;
+
     public AIPlayer(string name, string symbol, int delayMs) {
         this.name = name;
         this.symbol = symbol;
@@ -30,7 +32,8 @@ public abstract class AIPlayer : IPlayer {
         // Scan board for free slots
         for (int r = 0; r < board.GetLength(0); r++) {
             for (int c = 0; c < board.GetLength(1); c++) {
-                if (board.IsCellEmpty(r, c)) {
+                // TODO: Add IsCellInteractable condition here
+                if (board.IsCellEmpty(r, c) && board.IsCellInteractable(r,c)) {
                     emptyCells.Add((r, c));
                 }
             }
@@ -39,17 +42,73 @@ public abstract class AIPlayer : IPlayer {
         return emptyCells;
     }
 
+    private bool TryFindPowerUpTarget(IBoardReader boardReader, out int targetRow, out int targetCol) {
+        targetRow = -1;
+        targetCol = -1;
+
+        // Simple strategy: Look for any occupied opponent cell to disrupt
+        for (int r = 0; r < boardReader.GetLength(0); r++) {
+            for (int c = 0; c < boardReader.GetLength(1); c++) {
+                string cellSymbol = boardReader.GetCell(r, c);
+                // If it contains a mark and isn't empty/locked hazard
+                if (!string.IsNullOrEmpty(cellSymbol) && cellSymbol != symbol){
+                    targetRow = r;
+                    targetCol = c;
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public async void MakeMove(IBoardReader board, Action<int, int> onMoveSelected){
-        List<(int, int)> emptyCells = FindEmptyCells(board);
+        try {
+            await Task.Delay(delayMs);
+        }
+        catch (OperationCanceledException) {
+            return; // Exits cleanly if cancelled
+        }
+
+        // Ensure the game/application is still playing before processing
+        if (!Application.isPlaying) return;
+
+        // Set your desired chance percentage here (e.g., 30.0f for 30% chance)
+        float removePowerUpChance = 30.0f;
+        // Roll a random percentage (0 to 100)
+        bool rollSucceeded = UnityEngine.Random.Range(0f, 100f) <= removePowerUpChance;
+
+        if (rollSucceeded && powerUpCharges > 0 && TryFindPowerUpTarget(board, out int removeRow, out int removeCol)) {
+            Debug.Log("Attempting remove");
+            if (TryUsePowerUp()) {
+                ICommand removeCommand = new RemoveMarkCommand(board as IBoard, removeRow, removeCol);
+                removeCommand.Execute();
+            }
+        }
 
         // Select a random available slot
+        List<(int, int)> emptyCells = FindEmptyCells(board);
         if (emptyCells.Count > 0) {
-            await Task.Delay(delayMs);
-
             var (row, col) = GenerateMove(board, emptyCells);
 
-            // Trigger the move callback
-            onMoveSelected?.Invoke(row, col);
+            // Instantiate and execute PlaceMarkCommand
+            ICommand placeCommand = new PlaceMarkCommand(board as IBoard, row, col, symbol);
+            bool success = placeCommand.Execute();
+
+            if (success) {
+                onMoveSelected?.Invoke(row, col);
+            }
         }
+    }
+
+    public bool TryUsePowerUp() {
+        if (powerUpCharges > 0) {
+            powerUpCharges--;
+            return true;
+        }
+        return false;
+    }
+
+    public void AddPowerUpCharge() {
+        powerUpCharges++;
     }
 }

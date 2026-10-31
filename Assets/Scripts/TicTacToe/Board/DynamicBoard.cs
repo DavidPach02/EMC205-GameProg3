@@ -89,4 +89,17 @@ public class DynamicBoard : IBoard
             }
         }
     }
+
+    public bool ForceClearCell(int row, int col)
+    {
+        if (!IsValidCell(row, col)) return false;
+
+        // Only allow clearing if the tile isn't a locked outer hazard ring
+        if (tiles[row, col].currentState is UnclickableTileState) return false;
+
+        // Clear mark and transition back to a normal empty tile
+        tiles[row, col].occupyingSymbol = null;
+        tiles[row, col].TransitionTo(new NormalTileState());
+        return true;
+    }
 }

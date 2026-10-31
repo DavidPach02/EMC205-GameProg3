@@ -6,11 +6,26 @@ public class HumanPlayer : IPlayer
     private string name;
     private string symbol;
     private IInputProvider inputProvider;
+    ICommand markCommand;
+
+    public int powerUpCharges { get; private set; } = 5;
 
     public HumanPlayer(string name, string symbol, IInputProvider inputProvider) {
         this.name = name;
         this.symbol = symbol;
         this.inputProvider = inputProvider;
+    }
+
+    public void AddPowerUpCharge() {
+        powerUpCharges++;
+    }
+
+    public bool TryUsePowerUp() {
+        if (powerUpCharges > 0) {
+            powerUpCharges--;
+            return true;
+        }
+        return false;
     }
 
     public string GetPlayerName() {
@@ -29,7 +44,17 @@ public class HumanPlayer : IPlayer
             if (board.IsCellEmpty(row, col)) {
                 // Unsubscribe immediately so subsequent clicks aren't processed twice
                 inputProvider.OnCellSelected -= inputHandler;
-                onMoveSelected?.Invoke(row, col);
+
+                if (board is IBoard)
+                {
+                    markCommand = new PlaceMarkCommand(board as IBoard, row, col, symbol);
+                    bool success = markCommand.Execute();
+
+                    if (success)
+                    {
+                        onMoveSelected?.Invoke(row, col);
+                    }
+                }
             }
         };
 

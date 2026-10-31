@@ -6,6 +6,11 @@ public class TicTacToeBoardPresenter : MonoBehaviour, IBoardPresenter {
     [SerializeField] TextMeshProUGUI statusText;
 
     private Button[,] cellButtons;
+    private bool isTargetingForRemoval = false;
+
+    public void SetTargetingMode(bool active) {
+        isTargetingForRemoval = active;
+    }
 
     IBoardPresenter IBoardPresenter.Initialize(Button[,] cellButtons) {
         this.cellButtons = cellButtons;
@@ -75,9 +80,20 @@ public class TicTacToeBoardPresenter : MonoBehaviour, IBoardPresenter {
             for (int c = 0; c < board.GetLength(1); c++) {
                 // Read symbol and clickability directly from domain board
                 string symbol = board.GetCell(r, c);
-                bool interactable = board.IsCellInteractable(r, c); // Driven by ITileState.CanBeClicked
+                bool isInteractable;
 
-                SyncTileState(r, c, symbol, interactable);
+                if (isTargetingForRemoval) {
+                    // DURING TARGETING: Only cells with a mark (and not locked) can be clicked!
+                    bool isOccupied = !string.IsNullOrEmpty(symbol);
+                    bool isLocked = !board.IsCellInteractable(r, c) && isOccupied == false; // Adjust based on your lock check
+                    isInteractable = isOccupied;
+                }
+                else {
+                    // NORMAL MODE: Only empty and interactable cells can be clicked
+                    isInteractable = board.IsCellInteractable(r, c) && string.IsNullOrEmpty(symbol);
+                }
+
+                SyncTileState(r, c, symbol, isInteractable);
             }
         }
     }
