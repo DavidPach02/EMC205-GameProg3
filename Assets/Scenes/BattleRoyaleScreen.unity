@@ -1350,7 +1350,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1512383832}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: PowerUpPresenter, Assembly-CSharp
         m_MethodName: OnHumanPowerUpButtonClicked
         m_Mode: 1
@@ -2188,7 +2188,6 @@ GameObject:
   - component: {fileID: 1512383830}
   - component: {fileID: 1512383829}
   - component: {fileID: 1512383828}
-  - component: {fileID: 1512383832}
   - component: {fileID: 1512383833}
   m_Layer: 5
   m_Name: PowerUpPanel
@@ -2213,9 +2212,9 @@ RectTransform:
   - {fileID: 735781909}
   m_Father: {fileID: 135846369}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 601.8, y: -40}
+  m_AnchorMin: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -79.20001, y: -40}
   m_SizeDelta: {x: 145, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1512383828
@@ -2296,26 +2295,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1512383826}
   m_CullTransparentMesh: 1
---- !u!114 &1512383832
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1512383826}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 78d956b08bf13d140b4f6cd6c003037d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PowerUpPresenter
-  chargeIcons:
-  - {fileID: 2119338189}
-  - {fileID: 1095473575}
-  - {fileID: 1176536141}
-  - {fileID: 1210298348}
-  - {fileID: 1356726138}
-  removeMarkPowerUpButton: {fileID: 511582022}
-  boardPresenter: {fileID: 1972548328}
 --- !u!114 &1512383833
 MonoBehaviour:
   m_ObjectHideFlags: 0
