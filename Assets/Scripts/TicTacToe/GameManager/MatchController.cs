@@ -7,8 +7,7 @@ public class MatchController
     public IBoardPresenter boardPresenter;
     public ITurnManager turnManager;
     public IWinChecker winChecker;
-    public IInputProvider inputProvider;
-    public PowerUpPresenter powerUpPresenter;
+    public PowerUpViewModel powerUpViewModel;
 
     bool isGameOver;
 
@@ -27,13 +26,9 @@ public class MatchController
         return this;
     }
 
-    public MatchController SetPowerUpPresenter(IInputProvider inputProvider, PowerUpPresenter powerUpPresenter) {
-        this.powerUpPresenter = powerUpPresenter;
+    public MatchController SetPowerUpPresenter(IInputProvider inputProvider, PowerUpViewModel powerUpViewModel) {
+        this.powerUpViewModel = powerUpViewModel;
 
-        if (powerUpPresenter != null)
-        {
-            powerUpPresenter.Initialize(inputProvider, board, () => turnManager.GetCurrentPlayer());
-        }
         return this;
     }
 
@@ -50,8 +45,8 @@ public class MatchController
         IPlayer activePlayer = turnManager.GetCurrentPlayer();
         boardPresenter.SetStatusText($"{activePlayer.GetPlayerName()}'s Turn ({activePlayer.GetSymbol()})");
 
-        if (powerUpPresenter) {
-            powerUpPresenter.UpdatePowerUpUI(activePlayer);
+        if (powerUpViewModel != null) {
+            powerUpViewModel.UpdateState();
         }
         
         // Human waits for input and AI immediately picks a slot

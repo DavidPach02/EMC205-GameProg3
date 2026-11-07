@@ -8,7 +8,7 @@ public class GameInstaller : MonoBehaviour
     [SerializeField] private BoardView boardView;
     [SerializeField] private TicTacToeBoardPresenter boardPresenter;
     [SerializeField] private StandardRestartScreen restartScreenView;
-    [SerializeField] private PowerUpPresenter powerUpPresenter;
+    [SerializeField] private PowerUpView powerUpView;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
@@ -23,8 +23,23 @@ public class GameInstaller : MonoBehaviour
         // Create match settings
         MatchSettings matchSettings = MatchPreset.CreateBattleRoyaleBlitz();
 
+        // Create Match controller
         MatchController controller = matchFactory.CreateMatchInstance(matchSettings, boardPresenter, pvpMatchMaker.CreateMatchup());
-        controller.SetPowerUpPresenter(inputProvider, powerUpPresenter);
+
+        // Create the PowerUpViewModel
+        PowerUpViewModel vm = new PowerUpViewModel(
+            () => controller.turnManager.GetCurrentPlayer(),
+            controller.board,
+            inputProvider,
+            boardPresenter
+        );
+
+        // Bind View to ViewModel
+        if (powerUpView != null) {
+            powerUpView.Bind(vm);
+        }
+
+        controller.SetPowerUpPresenter(inputProvider, vm);
 
         GameManager.Instance.InitializeSession(controller, boardView, inputProvider, restartScreenView);
     }
