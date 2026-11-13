@@ -4,6 +4,7 @@ using TMPro;
 
 public class TicTacToeBoardPresenter : MonoBehaviour, IBoardPresenter {
     [SerializeField] TextMeshProUGUI statusText;
+    [SerializeField] MarkFlyweightFactory flyweightFactory;
 
     private Button[,] cellButtons;
     private bool isTargetingForRemoval = false;
@@ -37,14 +38,7 @@ public class TicTacToeBoardPresenter : MonoBehaviour, IBoardPresenter {
     public void SetCellSymbol(int row, int col, string symbol) {
         if (cellButtons == null) return;
 
-        // Update the visual text on the specific button
-        TextMeshProUGUI cellText = cellButtons[row, col].GetComponentInChildren<TextMeshProUGUI>();
-        if (cellText != null) {
-            cellText.text = symbol;
-        }
-
-        // Disable button so it can't be clicked again
-        cellButtons[row, col].interactable = false;
+        SyncTileState(row, col, symbol, false);
     }
 
     public void SetStatusText(string message) {
@@ -64,9 +58,34 @@ public class TicTacToeBoardPresenter : MonoBehaviour, IBoardPresenter {
         if (button == null) return;
 
         // Update Visual Symbol
+        //Image buttonImage = button.transform.Find("SymbolImage")?.GetComponent<Image>();
+        Image buttonImage = null;
+        foreach (Transform child in button.transform) {
+            if (child.name != "Button" && child.GetComponent<Image>() != null) {
+                buttonImage = child.GetComponent<Image>();
+                break;
+            }
+        }
+
         TextMeshProUGUI cellText = button.GetComponentInChildren<TextMeshProUGUI>();
-        if (cellText != null) {
-            cellText.text = symbol ?? "";
+        
+        if (string.IsNullOrEmpty(symbol)) {
+            if (buttonImage != null) buttonImage.gameObject.SetActive(false);
+            if (cellText != null) cellText.text = "";
+        }
+        else {
+            MarkFlyweight flyweight = flyweightFactory != null ? flyweightFactory.GetFlyweight(symbol) : null;
+
+            if (flyweight != null && buttonImage != null) {
+                buttonImage.gameObject.SetActive(true);
+                buttonImage.sprite = flyweight.symbolSprite;
+                buttonImage.color = flyweight.displayColor;
+                if (cellText != null) cellText.text = ""; // Clear text if using sprites
+            }
+            else if (cellText != null) {
+                // Fallback to text if flyweight/image isn't set up yet
+                cellText.text = symbol;
+            }
         }
 
         // Update Interactability based on Tile State

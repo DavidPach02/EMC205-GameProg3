@@ -6,6 +6,8 @@ public class TileContext {
     public string occupyingSymbol { get; set; }
     public ITileState currentState { get; private set; }
 
+    public MarkFlyweight currentFlyweight { get; set; }
+
     public TileContext(int row, int col) {
         this.row = row;
         this.col = col;
